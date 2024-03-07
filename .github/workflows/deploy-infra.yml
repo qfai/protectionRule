@@ -15,16 +15,11 @@ permissions:
   contents: read
 
 jobs:
-    cleanup:
-      # Work around to cleanup the previous run due to the failure of HCI cluster deletion.
-      uses: ./.github/workflows/cleanup.yml
-      secrets: inherit
     dev:
       name: dev
       runs-on: ubuntu-latest
       steps:
         - run: echo "running dev stage"
-      needs: [cleanup]
     sample:
       uses: ./.github/workflows/site-cd-workflow.yml
       with:
