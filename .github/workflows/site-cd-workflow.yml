@@ -104,11 +104,17 @@ jobs:
           planresult=$(terraform show ${{ runner.temp }}/${{ inputs.working-directory }}/out.tfplan) && \
           gh api -X PATCH -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            -f 'status=completed' \
-            -f 'output[title]=Terraform Plan Checks' \
-            -f 'output[summary]=Terraform Plan Successed' \
-            -f "output[text]=$planresult" \
-            /repos/${{ github.repository }}/check-runs/${{ steps.checkrun.outputs.checkId }} 
+            /repos/${{ github.repository }}/check-runs/${{  steps.checkrun.outputs.checkId }} \
+            --input - <<- EOF
+            {
+              "conclusion": "success",
+              "output": {
+                "title": "Terraform Plan Checks 🚀",
+                "summary": "**Summary**: Terraform Plan succeed.",
+                "text": "$planresult"
+               }
+            }
+          EOF 
 
       # Telemetry: Plan Failed
       - name: "Telemetry: Plan Failed"
@@ -119,11 +125,18 @@ jobs:
           planresult=$(terraform show ${{ runner.temp }}/${{ inputs.working-directory }}/out.tfplan) && \
           gh api -X PATCH -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            -f 'status=completed' \
-            -f 'output[title]=Terraform Plan Checks' \
-            -f 'output[summary]=Terraform Plan failed' \
-            -f "output[text]=$planresult" \
-            /repos/${{ github.repository }}/check-runs/${{ steps.checkrun.outputs.checkId }} 
+            /repos/${{ github.repository }}/check-runs/${{  steps.checkrun.outputs.checkId }} \
+            --input - <<- EOF
+            {
+              "conclusion": "failure",
+              "output": {
+                "title": "Terraform Plan Checks 🚀",
+                "summary": "**Summary**: Terraform Plan failed.",
+                "text": "$planresult"
+               }
+            }
+          EOF 
+
 
       # On push to $default-branch, build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
