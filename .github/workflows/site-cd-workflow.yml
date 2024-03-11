@@ -107,7 +107,7 @@ jobs:
             -f 'status=success' \
             -f 'output[title]=Terraform Plan Checks' \
             -f 'output[summary]=Terraform Plan Successed' \
-            -f '$planresult' \
+            -f "output[text]=$planresult" \
             /repos/${{ github.repository }}/check-runs/${{ steps.checkrun.outputs.checkId }} 
 
       # Telemetry: Plan Failed
@@ -122,7 +122,7 @@ jobs:
             -f 'status=failure' \
             -f 'output[title]=Terraform Plan Checks' \
             -f 'output[summary]=Terraform Plan failed' \
-            -f '$planresult' \
+            -f "output[text]=$planresult" \
             /repos/${{ github.repository }}/check-runs/${{ steps.checkrun.outputs.checkId }} 
 
       # On push to $default-branch, build or change infrastructure according to Terraform configuration files
