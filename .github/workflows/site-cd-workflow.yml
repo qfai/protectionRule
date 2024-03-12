@@ -102,7 +102,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo ${{ steps.checkrun.outputs.checkId }}
-          
+
           planresult=$(terraform show ${{ runner.temp }}/${{ inputs.working-directory }}/out.tfplan)
 
           echo $planresult
@@ -110,16 +110,10 @@ jobs:
           gh api -X PATCH -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             /repos/${{ github.repository }}/check-runs/${{  steps.checkrun.outputs.checkId }} \
-            --input @- << EOM
-            {
-              "conclusion": "success",
-              "output": {
-                "title": "Terraform Plan Checks 🚀",
-                "summary": "**Summary**: Terraform Plan succeed.",
-                "text": "$planresult"
-               }
-            }
-          EOM
+            -f 'output[title]=Terraform Plan Checks' \
+            -f 'output[summary]=**Summary**: Terraform Plan succeed.' \
+            -f "output[text]=$planresult" \
+            -f 'conclusion=success'
 
       # Telemetry: Plan Failed
       - name: "Telemetry: Plan Failed"
@@ -131,16 +125,10 @@ jobs:
           gh api -X PATCH -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             /repos/${{ github.repository }}/check-runs/${{  steps.checkrun.outputs.checkId }} \
-            --input - <<- EOM
-            {
-              "conclusion": "failure",
-              "output": {
-                "title": "Terraform Plan Checks 🚀",
-                "summary": "**Summary**: Terraform Plan failed.",
-                "text": "$planresult"
-               }
-            }
-          EOM
+            -f 'output[title]=Terraform Plan Checks' \
+            -f 'output[summary]=**Summary**: Terraform Plan failed.' \
+            -f "output[text]=$planresult" \
+            -f 'conclusion=failure'
 
 
       # On push to $default-branch, build or change infrastructure according to Terraform configuration files
