@@ -2,17 +2,14 @@
 name: Terraform apply infra change
 
 on:
-  push:
-    branches:
-        - main
   pull_request:
     branches:
         - main
-  workflow_dispatch:
 
 permissions:
   id-token: write
   contents: read
+  checks: write
 
 jobs:
     dev:
